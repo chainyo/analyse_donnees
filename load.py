@@ -24,15 +24,19 @@ class Connexion:
     def create_tables(cls):
         cls.open_connexion()
         #Créer la table emergencies
-        cls.cursor.execute("CREATE TABLE `911`.`emergencies` ( `id` INT(7) NOT NULL AUTO_INCREMENT , `lat` FLOAT(10) NOT NULL , `long` FLOAT(10) NOT NULL , `desc` VARCHAR(255) NOT NULL , `town` INT(1) NOT NULL , `address` VARCHAR(255) NOT NULL , `time` DATETIME NOT NULL , `type` INT(1) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB")
+        cls.cursor.execute("CREATE TABLE `911`.`emergencies` ( `id` INT(7) NOT NULL AUTO_INCREMENT , `lat` FLOAT(10) NOT NULL , `long` FLOAT(10) NOT NULL , `town` INT(7) NOT NULL , `address` VARCHAR(255) NOT NULL , `time` DATETIME NOT NULL , `type` INT(7) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB")
         #Créer la table towns
         cls.cursor.execute("CREATE TABLE `911`.`towns` ( `id` INT(7) NOT NULL AUTO_INCREMENT , `name` VARCHAR(100) NOT NULL , `zip` INT(5) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB")
         #Créer la table types
         cls.cursor.execute("CREATE TABLE `911`.`types` ( `id` INT(7) NOT NULL AUTO_INCREMENT , `name` VARCHAR(100) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;")
-        #Ajouter les relations
+        #Créer la table intermédiaire
+        cls.cursor.execute("CREATE TABLE `911`.`emergency_type` ( `id` INT(7) NOT NULL AUTO_INCREMENT , `id_type` INT NOT NULL , `name` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;")
+        #Ajouter les relations de emergencies
         cls.cursor.execute("ALTER TABLE `emergencies` ADD FOREIGN KEY (`town`) REFERENCES `towns`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT")
-        cls.cursor.execute("ALTER TABLE `emergencies` ADD FOREIGN KEY (`type`) REFERENCES `types`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT")
-        
+        cls.cursor.execute("ALTER TABLE `emergencies` ADD FOREIGN KEY (`type`) REFERENCES `emergency_type`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;")
+        #Ajouter les relations de emergency_type
+        cls.cursor.execute("ALTER TABLE `emergency_type` ADD FOREIGN KEY (`id_emergency`) REFERENCES `emergencies`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT")
+        cls.cursor.execute("ALTER TABLE `emergency_type` ADD FOREIGN KEY (`id_emergency`) REFERENCES `types`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT")
         cls.close_connexion()
 
     @classmethod
@@ -50,8 +54,59 @@ class Connexion:
         cls.close_connexion()
 
     @classmethod
-    def load_emergencies(cls, data):
+    def load_emergency_types(cls, data):
         cls.open_connexion()
-        cls.cursor.executemany("INSERT INTO emergencies VALUES (NULL, %s, %s, %s, (SELECT id from towns WHERE name = %s), %s, (SELECT id from types WHERE name = %s))", data)
+        cls.cursor.executemany("INSERT INTO emergency_type VALUES (NULL, (SELECT id from types WHERE name = %s), %s)", data)
         cls.link.commit()
         cls.close_connexion()
+
+    @classmethod
+    def load_emergencies(cls, data):
+        cls.open_connexion()
+        cls.cursor.execute("INSERT INTO emergencies VALUES (NULL, %s, %s, (SELECT id from towns WHERE zip = %s AND name = %s), %s, %s, (SELECT id from emergency_type WHERE name = %s AND id_type = (SELECT id FROM types WHERE name = %s)))", data)
+        cls.link.commit()
+        cls.close_connexion()
+
+
+class Connexion2:
+    def __init__(self):
+        self.link = mysql.connect(user='root', password='root', host='localhost', port="8081", database='911')
+        self.cursor = self.link.cursor()
+
+    def load_emergencies(self, data):
+        self.cursor.execute("INSERT INTO emergencies VALUES (NULL, %s, %s, (SELECT id from towns WHERE zip = %s AND name = %s), %s, %s, (SELECT id from emergency_type WHERE name = %s AND id_type = (SELECT id FROM types WHERE name = %s)))", data)
+        self.link.commit()
+
+
+
+import pandas as pd
+
+df = pd.read_csv('export.csv')
+df.head()
+
+# liste = set()
+# for desc in df['title']:
+#     if desc[-1] == '-':
+#         desc = desc[:-2]
+#     spl = desc.split(': ')
+#     liste.add((spl[0], spl[1]))
+
+# Connexion.load_emergency_types(list(liste))
+
+
+def split_type(typ):
+        if typ[-1] == '-':
+            typ = typ[:-2]
+        spl = typ.split(': ')
+        return (spl[0], spl[1])
+
+data = []
+
+for lat, lng, zp, town, address, time, typ in zip(df.lat, df.lng, df.zip, df.twp, df.addr, df.timeStamp, df.title):
+    data.append((lat, lng, zp, town, address, time, split_type(typ)[1], split_type(typ)[0]))
+
+Conn = Connexion2()
+
+for i, y in enumerate(data):
+    print(i)
+    Conn.load_emergencies(data[i])
