@@ -33,7 +33,8 @@ CREATE PROCEDURE number_type
 BEGIN
 SELECT COUNT(emergencies.id) 
 FROM emergencies 
-WHERE emergencies.type in (SELECT id from emergency_type WHERE id_type in (SELECT id FROM types WHERE name = typ));
+WHERE emergencies.type in (SELECT id from emergency_type 
+WHERE id_type in (SELECT id FROM types WHERE name = typ));
 END //
 DELIMITER ;
 
@@ -116,7 +117,8 @@ Vue qui permet d'afficher les informations avec les tables fusionnées
 
 ```SQL
 CREATE VIEW view_call
-AS SELECT towns.name AS town, emergencies.address, emergencies.time, emergency_type.name AS description, types.name AS type
+AS SELECT towns.name AS town, emergencies.address, emergencies.time, 
+emergency_type.name AS description, types.name AS type
 FROM emergencies
 JOIN towns ON emergencies.town = towns.id
 JOIN emergency_type ON emergencies.type = emergency_type.id
