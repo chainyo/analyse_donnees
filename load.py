@@ -4,6 +4,7 @@ import mysql.connector as mysql
 class Connexion:
 
     @classmethod    
+    #Première commande pour créer la base de donnée
     def create_database(cls):
         cls.link = mysql.connect(user='root', password='root', host='localhost', port="8081")
         cls.cursor = cls.link.cursor()
@@ -11,11 +12,13 @@ class Connexion:
         cls.close_connexion()
 
     @classmethod
+    #Permet d'ouvrir la connexion
     def open_connexion(cls):
         cls.link = mysql.connect(user='root', password='root', host='localhost', port="8081", database='911')
         cls.cursor = cls.link.cursor()
 
     @classmethod
+    #Permet de fermer la connexion
     def close_connexion(cls):
         cls.cursor.close()
         cls.link.close()
@@ -40,6 +43,7 @@ class Connexion:
         cls.close_connexion()
 
     @classmethod
+    #Remplir la table towns
     def load_towns(cls, data):
         cls.open_connexion()
         cls.cursor.executemany("INSERT INTO towns VALUES (NULL, %s, %s)", data)
@@ -47,6 +51,7 @@ class Connexion:
         cls.close_connexion()
 
     @classmethod
+    #Remplir la table types
     def load_types(cls, data):
         cls.open_connexion()
         cls.cursor.executemany("INSERT INTO types VALUES (NULL, %s)", data)
@@ -54,6 +59,7 @@ class Connexion:
         cls.close_connexion()
 
     @classmethod
+    #Remplir la table emergency_types
     def load_emergency_types(cls, data):
         cls.open_connexion()
         cls.cursor.executemany("INSERT INTO emergency_type VALUES (NULL, (SELECT id from types WHERE name = %s), %s)", data)
@@ -61,52 +67,9 @@ class Connexion:
         cls.close_connexion()
 
     @classmethod
+    #Remplir la table principale emergencies
     def load_emergencies(cls, data):
         cls.open_connexion()
         cls.cursor.execute("INSERT INTO emergencies VALUES (NULL, %s, %s, (SELECT id from towns WHERE zip = %s AND name = %s), %s, %s, (SELECT id from emergency_type WHERE name = %s AND id_type = (SELECT id FROM types WHERE name = %s)))", data)
         cls.link.commit()
         cls.close_connexion()
-
-
-class Connexion2:
-    def __init__(self):
-        self.link = mysql.connect(user='root', password='root', host='localhost', port="8081", database='911')
-        self.cursor = self.link.cursor()
-
-    def load_emergencies(self, data):
-        self.cursor.execute("INSERT INTO emergencies VALUES (NULL, %s, %s, (SELECT id from towns WHERE zip = %s AND name = %s), %s, %s, (SELECT id from emergency_type WHERE name = %s AND id_type = (SELECT id FROM types WHERE name = %s)))", data)
-        self.link.commit()
-
-
-
-import pandas as pd
-
-df = pd.read_csv('export.csv')
-df.head()
-
-# liste = set()
-# for desc in df['title']:
-#     if desc[-1] == '-':
-#         desc = desc[:-2]
-#     spl = desc.split(': ')
-#     liste.add((spl[0], spl[1]))
-
-# Connexion.load_emergency_types(list(liste))
-
-
-def split_type(typ):
-        if typ[-1] == '-':
-            typ = typ[:-2]
-        spl = typ.split(': ')
-        return (spl[0], spl[1])
-
-data = []
-
-for lat, lng, zp, town, address, time, typ in zip(df.lat, df.lng, df.zip, df.twp, df.addr, df.timeStamp, df.title):
-    data.append((lat, lng, zp, town, address, time, split_type(typ)[1], split_type(typ)[0]))
-
-Conn = Connexion2()
-
-for i, y in enumerate(data):
-    print(i)
-    Conn.load_emergencies(data[i])
