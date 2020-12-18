@@ -28,7 +28,7 @@ Mais pour notre analyse nous avons décidé de ne garder que quelques colonnes d
 
 Nous avons fait le choix de diviser notre jeu de données en trois tables.
 
-![mcd](./MCD.png)
+![mcd](./images/MCD.png)
 
 Une fois la bdd créée et les tables prêtes, nous avons créé un autre code python qui va compléter notre bdd pour chaque ligne de notre fichier csv.
 
@@ -145,8 +145,20 @@ SELECT * FROM view_call
 
 - Répartition des types d'incidents en pourcentage
 
+![Types Pie](./images/types_pie.PNG)
+
+- Principales catégories d'appels pour chaque type
+
+![Pies Types](./images/pies_types.png)
+
 - Répartition des types d'incidents en fonction des dates
+
+![Time Types Nb](./images/time_types_number.PNG)
 
 - Répartition des appels en fonction des villes
 
+![Towns stats](./images/towns_stats.PNG)
+
 - Top 10 des villes
+
+![Top 10 Towns](./images/towns_top10.PNG)
