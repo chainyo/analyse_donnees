@@ -153,7 +153,7 @@ SELECT * FROM view_call
 
 - Répartition des types d'incidents en fonction des dates
 
-![Time Types Nb](./images/time_types_nb.PNG)
+![Time Types Nb](./images/time_types_nb.png)
 
 - Répartition des appels en fonction des villes
 
