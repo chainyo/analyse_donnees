@@ -13,6 +13,9 @@ Notre jeu de données est constitué de différents types de données :
 - Adresse
 - Description
 - Date & Heure
+- Colonne remplie de 1 (dummies)
+
+Mais pour notre analyse nous avons décidé de ne garder que quelques colonnes dans notre jeu de données. Nous avons donc retiré les colonnes `Description` et la colone remplie de 1.  
 
 ## Présentation du MCD
 
