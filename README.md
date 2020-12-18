@@ -140,3 +140,13 @@ JOIN types ON emergency_type.id_type = types.id;
 
 SELECT * FROM view_call
 ```
+
+## Analyse et Visualisation des données
+
+- Répartition des types d'incidents en pourcentage
+
+- Répartition des types d'incidents en fonction des dates
+
+- Répartition des appels en fonction des villes
+
+- Top 10 des villes
