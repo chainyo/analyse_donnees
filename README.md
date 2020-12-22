@@ -10,7 +10,7 @@ Equipe constituée de Pereg Hergoualc'h & Thomas Chaigneau.
 
 ## Jeu de données
 
-Nous avons utilisé un jeu de données qui répertorie des données sur les appels d'urgences au numéro d'urgence 911 en Pennsylvanie.   
+Nous avons utilisé un jeu de données qui répertorie des données sur les appels d'urgences au [numéro d'urgence 911](https://www.kaggle.com/mchirico/montcoalert) en Pennsylvanie.   
 
 Voici les données de notre jeu de données :  
 - Longitude
@@ -153,15 +153,8 @@ SELECT * FROM view_call
 
 - Répartition des types d'incidents en fonction des dates
 
-![Time Types Nb](./images/time_types_nb.PNG)
-
-- Répartition des appels en fonction des villes
-
-![Towns stats](./images/towns_stats.PNG)
-
-- Top 10 des villes
-
-![Top 10 Towns](./images/towns_top10.PNG)
+![Time Types Nb](./images/time_typ<<<<<<< HEAD
+10.PNG)
 
 ## Cahier des charges
 
