@@ -162,3 +162,13 @@ SELECT * FROM view_call
 - Top 10 des villes
 
 ![Top 10 Towns](./images/towns_top10.PNG)
+
+## Cahier des charges
+
+- Lien vers le [cahier des charges](./CDC.ipynb)
+
+- Diagramme de Gantt de la répartition des tâches
+
+![Diagramme Gantt](./images/Gantt.png)
+
+- Notre [Devis](./Devis_Governors_Office_of_Administration.pdf) pour notre client: Governors Office of Administration.
