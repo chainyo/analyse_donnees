@@ -153,7 +153,7 @@ SELECT * FROM view_call
 
 - Répartition des types d'incidents en fonction des dates
 
-![Time Types Nb](./images/time_typ10.PNG)
+![Time Types Nb](./images/towns_top10.PNG)
 
 ## Cahier des charges
 
